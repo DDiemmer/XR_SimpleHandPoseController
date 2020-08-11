@@ -1,0 +1,29 @@
+#remove unity metadata files
+#removed due to missing prefabs when versioning
+#*.meta
+
+
+#remove csharp unity project files
+obj/
+*.csproj
+*.sln
+*.vscode
+
+#remove version control backup files
+*.orig
+
+#remove unity project folders
+
+.vs/
+Library/
+#ProjectSettings/
+Runtimes/
+Temp/
+Builds/
+Temp.meta
+
+ProjectSettings/ProjectVersion.txt
+Assets/UnityVS/
+*.htm
+Assets/UnityVS.meta
+cia3s-caivr-main.userprefs

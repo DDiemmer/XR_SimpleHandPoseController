@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "com.dbrizov.naughtyattributes": "https://github.com/DDiemmer/NaughtyAttributes.git#upm",
+    "com.ddiemmer.xr-input-manager": "https://github.com/DDiemmer/XRInputManager.git#upm",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
     "com.unity.ads": "3.4.7",

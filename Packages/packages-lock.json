@@ -1,5 +1,22 @@
 {
   "dependencies": {
+    "com.dbrizov.naughtyattributes": {
+      "version": "https://github.com/DDiemmer/NaughtyAttributes.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "60019e94c850a19ad1e40cdbfdbfabf3b986ea5e"
+    },
+    "com.ddiemmer.xr-input-manager": {
+      "version": "https://github.com/DDiemmer/XRInputManager.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.xr.interaction.toolkit": "0.9.4-preview",
+        "com.unity.textmeshpro": "2.0.1"
+      },
+      "hash": "782b9956dd855ea3b392735b0debb1218e31d6b5"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
