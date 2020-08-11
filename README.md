@@ -1,4 +1,4 @@
-# XR_SimpleHandPOseController 0.1 Alpha
+# XR_SimpleHandPoseController 0.1 Alpha
 
 
 </p>
