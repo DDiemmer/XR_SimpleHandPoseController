@@ -1,6 +1,6 @@
 {
   "name": "com.ddiemmer.xrhands-pose-controller",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "displayName": "XR Hands Pose Controller",
   "description": "Interaction system with controls and allows pre-configuration of gestures and poses of hand models to grab objects.",
   "unity": "2019.4",
