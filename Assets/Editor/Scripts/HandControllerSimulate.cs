@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#if UNITY_EDITOR
 namespace UserController
 {
     [ExecuteInEditMode]
@@ -97,3 +98,4 @@ namespace UserController
 
     }
 }
+#endif

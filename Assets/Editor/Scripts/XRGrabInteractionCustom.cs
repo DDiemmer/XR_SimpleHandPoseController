@@ -29,7 +29,7 @@ namespace UserController
         [Range(-180f, 180f)]
         public float rotateZ = 0f;
         //todo:  create booleans to choose rotate for reverse hand ... 
-
+    
 
         public Vector3 offSetGraspPosition = Vector3.zero;
         private GameObject attachPoint;
@@ -67,10 +67,12 @@ namespace UserController
         {
             if (Application.isPlaying || isReady)
             {
-                handControlerSimulate.SetActive(false);
+                if(handControlerSimulate != null)
+                   handControlerSimulate.SetActive(false);
                 return;
             }
-            handControlerSimulate.SetActive(true);
+            if(handControlerSimulate != null)
+                handControlerSimulate.SetActive(true);
 
             if (prefabGrabHandController == null)
                 prefabGrabHandController = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/UserController/Prefabs/HandSimulateControllAnimation.prefab", typeof(GameObject));

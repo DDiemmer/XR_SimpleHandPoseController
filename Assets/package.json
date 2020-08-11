@@ -2,13 +2,13 @@
   "name": "com.ddiemmer.xrhands-pose-controller",
   "version": "0.0.1",
   "displayName": "XR Hands Pose Controller",
-  "description": "Interaction system with controls and allows pre-configuration of gestures and poses of hand models to grab objects.",
+  "description": "Interaction system with controls and allows pre-configuration of gestures and poses of hand models to grab objects. following dependencies must be installed manually. /n 1 - com.dbrizov.naughtyattributes from https://github.com/DDiemmer/NaughtyAttributes.git#upm /n 2- com.ddiemmer.xr-input-manager from https://github.com/DDiemmer/XRInputManager.git#upm ",
   "unity": "2019.4",
   "dependencies": {
     "com.unity.xr.interaction.toolkit": "0.9.4-preview",
     "com.unity.textmeshpro": "2.0.1",
     "com.dbrizov.naughtyattributes": "2.0.4",
-    "com.ddiemmer.xr-input-manager": "0.0.1"
+    "com.ddiemmer.xr-input-manager": "0.0.3"
   },
   "keywords": [
     "Hand",
@@ -19,6 +19,19 @@
   "author": {
     "name": "Diego H Diemmer",
     "email": "ddiemmer@gmail.com",
-    "url": ""
-  }
+    "url": "https://github.com/DDiemmer/XR_SimpleHandPoseController.git"
+  },
+  "type": "tool",
+  "samples": [
+    {
+      "displayName": "Sample Demo",
+      "description": "Demo Scene",
+      "path": "Samples~/Demo"
+    },
+    {
+      "displayName": "Resources",
+      "description": "Prefabs",
+      "path": "Samples~/Resources"
+    }
+  ]
 }
