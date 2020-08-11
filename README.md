@@ -28,7 +28,8 @@ Necessary softwares to use the XRUI_Elements Package.
 1. On Menu Bar, access "Edit->Project Settings-> XR Plugin Management -> Install XR Plugin Management" then select your Plug-in Provider.
 
 # Demo Scene
-
+1. On Menu Bar, access "Window->PackageManager" Found XR Hands Pose Controller and click on import Sample demo and Import Resources.
+2. Go to Project -> Assets -> Samples -> XR Hand Pose Controller -> [version] -> Sample Demo -> Demo Scene and open DemoSceneUserController.
 
 ## Credits
  
