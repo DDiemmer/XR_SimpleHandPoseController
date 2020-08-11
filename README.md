@@ -25,7 +25,7 @@ Necessary softwares to use the XRUI_Elements Package.
 5. Click in + simbol(last time ;))  -> Add this package from git, set https://github.com/DDiemmer/XR_SimpleHandPoseController.git#upm to install this XRHandPoseController.
 
 # Configuring XR 
-
+1. On Menu Bar, access "Edit->Project Settings-> XR Plugin Management -> Install XR Plugin Management" then select your Plug-in Provider.
 
 # Demo Scene
 
