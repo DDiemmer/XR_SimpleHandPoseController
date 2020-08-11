@@ -20,15 +20,16 @@ Necessary softwares to use the XRUI_Elements Package.
 
 1. Create a new Unity Project or open an existent one (Unity 2019.4).
 2. On Menu Bar, access "Window->PackageManager" - [Package Manager](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@2.0/manual/index.html).
-3. Click in + simbol -> Add package from git, set https://github.com/DDiemmer/NaughtyAttributes.git#upm to install NaughtyAttributes dependecy.
+3. Click in + simbol -> Add package from git, set https://github.com/dbrizov/NaughtyAttributes.git#upm to install NaughtyAttributes dependecy.
 4. Click in + simbol again -> Add package from git, set https://github.com/DDiemmer/XRInputManager.git#upm to install XRInputManager dependecy.
 5. Click in + simbol(last time ;))  -> Add this package from git, set https://github.com/DDiemmer/XR_SimpleHandPoseController.git#upm to install this XRHandPoseController.
 
 # Configuring XR 
-
+1. On Menu Bar, access "Edit->Project Settings-> XR Plugin Management -> Install XR Plugin Management" then select your Plug-in Provider.
 
 # Demo Scene
-
+1. On Menu Bar, access "Window->PackageManager" Found XR Hands Pose Controller and click on import Sample demo and Import Resources.
+2. Go to Project -> Assets -> Samples -> XR Hand Pose Controller -> [version] -> Sample Demo -> Demo Scene and open DemoSceneUserController.
 
 ## Credits
  
