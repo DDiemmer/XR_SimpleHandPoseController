@@ -19,6 +19,14 @@
   "author": {
     "name": "Diego H Diemmer",
     "email": "ddiemmer@gmail.com",
-    "url": ""
-  }
+    "url": "https://github.com/DDiemmer/XR_SimpleHandPoseController.git"
+  },
+  "type": "tool",
+  "samples": [
+    {
+      "displayName": "Sample Demo",
+      "description": "Demo Scene",
+      "path": "Samples~/Demo"
+    }
+  ]
 }
