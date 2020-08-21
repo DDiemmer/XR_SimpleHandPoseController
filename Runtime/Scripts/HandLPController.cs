@@ -19,6 +19,8 @@ namespace UserController
         [Required]
         public ButtonHandler TriggerTouch = null;
 
+        private bool isLeftHand = false;
+
         private XRBaseControllerInteractor xRBaseController;
         private bool isOnInteractableEvent = false;
         private bool isOnSelectedEvent = false;
@@ -38,6 +40,10 @@ namespace UserController
                 xRBaseController.onSelectEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; isOnSelectedEvent = true; OnSelectedEnter(XRBaseInteractor); });
                 xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; OnSelectedEnter(XRBaseInteractor); });
             }
+
+            XRController rController = GetComponentInParent<XRController>();
+            if (rController != null)
+                isLeftHand = rController.controllerNode == UnityEngine.XR.XRNode.LeftHand;
 
             GripTouch.OnButtonDown += GripButtonDown;
             GripTouch.OnButtonUp += GripButtonUp;
@@ -59,6 +65,10 @@ namespace UserController
             {
                 grabType = (xRBaseInteractor as XRGrabInteractionCustom).grabbingType;
                 animateGrabFrame = (xRBaseInteractor as XRGrabInteractionCustom).animateFrame;
+                
+                if ((xRBaseInteractor as XRGrabInteractionCustom).Debug) {
+                    (xRBaseInteractor as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
+                }
             }
         }
 

@@ -25,6 +25,9 @@ namespace UserController
 
         private void OnValidate()
         {
+            if (anim == null)
+                anim = GetComponent<Animator>();
+
             anim.Update(Time.deltaTime);
         }
 
@@ -91,9 +94,10 @@ namespace UserController
 
             return currentPoint;
         }
-        public void SetOffSet(Vector3 offSet) {
-            if(currentPoint != null)
-            currentPoint.localPosition = offSet;
+        public void SetOffSet(Vector3 offSet)
+        {
+            if (currentPoint != null)
+                currentPoint.localPosition = offSet;
         }
 
     }

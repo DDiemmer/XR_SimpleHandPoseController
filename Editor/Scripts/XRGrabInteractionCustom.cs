@@ -13,7 +13,6 @@ namespace UserController
         [ReadOnly]
         public GameObject handControlerSimulate;
         private HandControllerSimulate controllerSimulate;
-        public bool leftHand = true;
         public GrabbingType grabbingType = GrabbingType.None;
         [Range(0.0025f, 1f)]
         public float animateFrame = 1f;
@@ -22,14 +21,18 @@ namespace UserController
         public Vector3 attachRelativePosition;
         [ReadOnly]
         public Vector3 attachRelativeRotation;
+
+        public bool leftHand = true;
         [Range(-180f, 180f)]
         public float rotateX = 0f;
         [Range(-180f, 180f)]
         public float rotateY = 0f;
         [Range(-180f, 180f)]
         public float rotateZ = 0f;
-        //todo:  create booleans to choose rotate for reverse hand ... 
 
+        public bool rightHandFixerAxisX = false;
+        public bool rightHandFixerAxisY = true;
+        public bool rightHandFixerAxisZ = false;
 
         public Vector3 offSetGraspPosition = Vector3.zero;
         private GameObject attachPoint;
@@ -37,7 +40,12 @@ namespace UserController
         public Vector3 originalLocalPoint;
 
         public bool isReady = false;
+        //Todo: Debug have issues on some rotation 
+        [Header("Caution !its  have some issues with some rotations")]
         public bool Debug = true;
+
+        private GameObject handDebug;
+
         private void Start()
         {
             if (attachRelativePosition != null && attachRelativePosition != Vector3.zero)
@@ -46,9 +54,11 @@ namespace UserController
                 {
                     if (!isReady && Debug)
                     {
+                        handControlerSimulate.SetActive(true);
                         GameObject handClone = Instantiate(handControlerSimulate);
                         handClone.transform.SetParent(transform, true);
                         handControlerSimulate.SetActive(false);
+                        handDebug = handClone;
                     }
                 }
                 attachPoint = Instantiate(new GameObject(), this.transform, false);
@@ -61,19 +71,30 @@ namespace UserController
                 attachTransform = attachPoint.transform;
             }
         }
+        public void SetDebugHand(bool _leftHand)
+        {
+            if (_leftHand == handDebug.transform.localScale.z > 0)
+                return;
+
+            handDebug.transform.localScale = new Vector3(handDebug.transform.localScale.x, handDebug.transform.localScale.y, handDebug.transform.localScale.z * -1);
+            Vector3 angle = handDebug.transform.localRotation.eulerAngles;
+            handDebug.transform.rotation = Quaternion.Euler(rightHandFixerAxisX ? angle.x + 180 : rotateX, rightHandFixerAxisY ? angle.y + 180 : rotateY, rightHandFixerAxisZ ? angle.z + 180 : rotateZ);
+        }
 
 #if UNITY_EDITOR
         private void OnValidate()
         {
             if (Application.isPlaying || isReady)
             {
-                handControlerSimulate.SetActive(false);
+                if (handControlerSimulate != null)
+                    handControlerSimulate.SetActive(false);
                 return;
             }
-            handControlerSimulate.SetActive(true);
+            if (handControlerSimulate != null)
+                handControlerSimulate.SetActive(true);
 
             if (prefabGrabHandController == null)
-                prefabGrabHandController = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/UserController/Prefabs/HandSimulateControllAnimation.prefab", typeof(GameObject));
+                prefabGrabHandController = HandSimulatorPrefabs.Instance.HandSimulator;
 
             if (prefabGrabHandController != null && handControlerSimulate == null)
             {
@@ -119,7 +140,7 @@ namespace UserController
 
             if (handAttachPoint == null)
             {
-                handControlerSimulate.transform.position = transform.position + offSetGraspPosition;
+                NextGraspPoint();
                 return;
             }
 
@@ -141,7 +162,9 @@ namespace UserController
             if (!leftHand)
             {
                 dir = (handControlerSimulate.transform.position - handAttachPoint.position);
-                handControlerSimulate.transform.position = transform.position + dir;
+                dir.y = dir.y * -1;
+                handControlerSimulate.transform.position = transform.position - dir;// - new Vector3(0, 0, offSetGraspPosition.z * 2);
+                handControlerSimulate.transform.rotation = Quaternion.Euler(rightHandFixerAxisX ? rotateX + 180 : rotateX, rightHandFixerAxisY ? rotateY + 180 : rotateY, rightHandFixerAxisZ ? rotateZ + 180 : rotateZ);
             }
         }
 #endif
