@@ -18,9 +18,13 @@ namespace UserController
         public float animateFrame = 1f;
         public Transform handAttachPoint;
         [ReadOnly]
-        public Vector3 attachRelativePosition;
+        public Vector3 attachRelativePositionLH;
         [ReadOnly]
-        public Vector3 attachRelativeRotation;
+        public Vector3 attachRelativeRotationLH;
+        [ReadOnly]
+        public Vector3 attachRelativePositionRH;
+        [ReadOnly]
+        public Vector3 attachRelativeRotationRH;
 
         public bool leftHand = true;
         [Range(-180f, 180f)]
@@ -35,7 +39,8 @@ namespace UserController
         public bool rightHandFixerAxisZ = false;
 
         public Vector3 offSetGraspPosition = Vector3.zero;
-        private GameObject attachPoint;
+        private GameObject attachPointLH;
+        private GameObject attachPointRH;
         [ReadOnly]
         public Vector3 originalLocalPoint;
 
@@ -48,7 +53,7 @@ namespace UserController
 
         private void Start()
         {
-            if (attachRelativePosition != null && attachRelativePosition != Vector3.zero)
+            if (attachRelativePositionLH != null && attachRelativePositionLH != Vector3.zero)
             {
                 if (handControlerSimulate != null)
                 {
@@ -61,14 +66,24 @@ namespace UserController
                         handDebug = handClone;
                     }
                 }
-                attachPoint = Instantiate(new GameObject(), this.transform, false);
-                attachPoint.name = "attachPoint";
-                if (attachRelativeRotation != null)
+                attachPointLH = Instantiate(new GameObject(), this.transform, false);
+                attachPointLH.name = "attachPointLeftH";
+                if (attachRelativeRotationLH != null)
                 {
-                    attachPoint.transform.rotation = Quaternion.Euler(attachRelativeRotation);
+                    attachPointLH.transform.rotation = Quaternion.Euler(attachRelativeRotationLH);
                 }
-                attachPoint.transform.position += (attachRelativePosition);
-                attachTransform = attachPoint.transform;
+                attachPointLH.transform.position += (attachRelativePositionLH);
+                attachTransform = attachPointLH.transform;
+            }
+            if (attachRelativePositionRH != null && attachRelativePositionRH != Vector3.zero)
+            {
+                attachPointRH = Instantiate(new GameObject(), this.transform, false);
+                attachPointRH.name = "attachPointRightH";
+                if (attachRelativeRotationRH != null)
+                {
+                    attachPointRH.transform.rotation = Quaternion.Euler(attachRelativeRotationRH);
+                }
+                attachPointRH.transform.position += (attachRelativePositionRH);
             }
         }
         public void SetDebugHand(bool _leftHand)
@@ -78,7 +93,15 @@ namespace UserController
 
             handDebug.transform.localScale = new Vector3(handDebug.transform.localScale.x, handDebug.transform.localScale.y, handDebug.transform.localScale.z * -1);
             Vector3 angle = handDebug.transform.localRotation.eulerAngles;
-            handDebug.transform.rotation = Quaternion.Euler(rightHandFixerAxisX ? angle.x + 180 : rotateX, rightHandFixerAxisY ? angle.y + 180 : rotateY, rightHandFixerAxisZ ? angle.z + 180 : rotateZ);
+            handDebug.transform.localRotation = Quaternion.Euler(rightHandFixerAxisX ? angle.x + 180 : rotateX, rightHandFixerAxisY ? angle.y + 180 : rotateY, rightHandFixerAxisZ ? angle.z + 180 : rotateZ);
+        }
+
+        public void SetHandDiffs(bool _leftHand)
+        {
+            if (_leftHand)
+                attachTransform = attachPointLH.transform;
+            else
+                attachTransform = attachPointRH.transform;
         }
 
 #if UNITY_EDITOR
@@ -152,11 +175,17 @@ namespace UserController
             Vector3 dir = (handControlerSimulate.transform.position - handAttachPoint.position) + offSetGraspPosition;
 
             Vector3 rotationA = new Vector3(rotateX, rotateY, rotateZ);
-            attachRelativeRotation = rotationA;
+            attachRelativeRotationLH = rotationA;
             handControlerSimulate.transform.rotation = Quaternion.Euler(rotationA);
 
             dir = (handControlerSimulate.transform.position - handAttachPoint.position);
-            attachRelativePosition = dir;
+            attachRelativePositionLH = dir;
+            //to right hand attach
+            Vector3 dirToRH = (handControlerSimulate.transform.position - handAttachPoint.position) + offSetGraspPosition;
+            dirToRH.y = dirToRH.y * -1;
+            attachRelativePositionRH = -dirToRH;
+            attachRelativeRotationRH = new Vector3(rightHandFixerAxisX ? rotateX + 180 : rotateX, rightHandFixerAxisY ? rotateY + 180 : rotateY, rightHandFixerAxisZ ? rotateZ + 180 : rotateZ);
+
             handControlerSimulate.transform.position = transform.position + dir;
             handControlerSimulate.transform.localScale = new Vector3(handControlerSimulate.transform.localScale.x, handControlerSimulate.transform.localScale.y, handControlerSimulate.transform.localScale.z * (leftHand ? 1 : -1));
             if (!leftHand)

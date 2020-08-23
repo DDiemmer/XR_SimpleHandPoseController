@@ -60,18 +60,17 @@ namespace UserController
 
         private void OnSelectedEnter(XRBaseInteractable xRBaseInteractor)
         {
-            var go = xRBaseInteractor.gameObject;
             if (xRBaseInteractor.GetType() == typeof(XRGrabInteractionCustom))
             {
                 grabType = (xRBaseInteractor as XRGrabInteractionCustom).grabbingType;
                 animateGrabFrame = (xRBaseInteractor as XRGrabInteractionCustom).animateFrame;
-                
-                if ((xRBaseInteractor as XRGrabInteractionCustom).Debug) {
+                (xRBaseInteractor as XRGrabInteractionCustom).SetHandDiffs(isLeftHand);
+                if ((xRBaseInteractor as XRGrabInteractionCustom).Debug)
+                {
                     (xRBaseInteractor as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
                 }
             }
         }
-
         private void ThumbButtonDown(XRController controller)
         {
             anim.SetBool("ThumbTouch", true);
