@@ -39,6 +39,7 @@ namespace UserController
         public bool rightHandFixerAxisZ = false;
 
         public Vector3 offSetGraspPosition = Vector3.zero;
+        public Vector3 offSetGraspPositionRH = Vector3.zero;
         private GameObject attachPointLH;
         private GameObject attachPointRH;
         [ReadOnly]
@@ -181,7 +182,9 @@ namespace UserController
             dir = (handControlerSimulate.transform.position - handAttachPoint.position);
             attachRelativePositionLH = dir;
             //to right hand attach
-            Vector3 dirToRH = (handControlerSimulate.transform.position - handAttachPoint.position);
+            Vector3 offsetFixAxis = offSetGraspPositionRH;
+            offsetFixAxis.y = offsetFixAxis.y * -1;
+            Vector3 dirToRH = (handControlerSimulate.transform.position - (handAttachPoint.position + offsetFixAxis));
             dirToRH.y = dirToRH.y * -1;
             attachRelativePositionRH = -dirToRH;
             attachRelativeRotationRH = new Vector3(rightHandFixerAxisX ? rotateX + 180 : rotateX, rightHandFixerAxisY ? rotateY + 180 : rotateY, rightHandFixerAxisZ ? rotateZ + 180 : rotateZ);
@@ -190,7 +193,7 @@ namespace UserController
             handControlerSimulate.transform.localScale = new Vector3(handControlerSimulate.transform.localScale.x, handControlerSimulate.transform.localScale.y, handControlerSimulate.transform.localScale.z * (leftHand ? 1 : -1));
             if (!leftHand)
             {
-                dir = (handControlerSimulate.transform.position - handAttachPoint.position);
+                dir = (handControlerSimulate.transform.position - (handAttachPoint.position + offSetGraspPositionRH));
                 dir.y = dir.y * -1;
                 handControlerSimulate.transform.position = transform.position - dir;// - new Vector3(0, 0, offSetGraspPosition.z * 2);
                 handControlerSimulate.transform.rotation = Quaternion.Euler(rightHandFixerAxisX ? rotateX + 180 : rotateX, rightHandFixerAxisY ? rotateY + 180 : rotateY, rightHandFixerAxisZ ? rotateZ + 180 : rotateZ);
