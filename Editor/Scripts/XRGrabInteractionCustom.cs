@@ -182,7 +182,9 @@ namespace UserController
             dir = (handControlerSimulate.transform.position - handAttachPoint.position);
             attachRelativePositionLH = dir;
             //to right hand attach
-            Vector3 dirToRH = (handControlerSimulate.transform.position - (handAttachPoint.position - offSetGraspPositionRH));
+            Vector3 offsetFixAxis = offSetGraspPositionRH;
+            offsetFixAxis.y = offsetFixAxis.y * -1;
+            Vector3 dirToRH = (handControlerSimulate.transform.position - (handAttachPoint.position + offsetFixAxis));
             dirToRH.y = dirToRH.y * -1;
             attachRelativePositionRH = -dirToRH;
             attachRelativeRotationRH = new Vector3(rightHandFixerAxisX ? rotateX + 180 : rotateX, rightHandFixerAxisY ? rotateY + 180 : rotateY, rightHandFixerAxisZ ? rotateZ + 180 : rotateZ);
