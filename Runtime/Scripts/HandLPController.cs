@@ -79,7 +79,9 @@ namespace UserController
                     animateGrabFrame = xRSimpleGrab.animateFrame;
                 }
                 else
+                {
                     grabType = GrabbingType.None; animateGrabFrame = 0f;
+                }
             }
         }
         private void ThumbButtonDown(XRController controller)
