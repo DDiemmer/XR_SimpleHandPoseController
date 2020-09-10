@@ -38,7 +38,7 @@ namespace UserController
                 xRBaseController.onHoverEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; OnSelectedEnter(XRBaseInteractor); });
                 xRBaseController.onHoverExit.AddListener((XRBaseInteractor) => { if (!isOnSelectedEvent) isOnInteractableEvent = false; });
                 xRBaseController.onSelectEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; isOnSelectedEvent = true; OnSelectedEnter(XRBaseInteractor); });
-                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; OnSelectedEnter(XRBaseInteractor); });
+                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; grabType = GrabbingType.None; animateGrabFrame = 0f; });
             }
 
             XRController rController = GetComponentInParent<XRController>();
@@ -69,6 +69,17 @@ namespace UserController
                 {
                     (xRBaseInteractor as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
                 }
+            }
+            else
+            {
+                XRSimpleGrabPresets xRSimpleGrab = xRBaseInteractor.gameObject.GetComponent<XRSimpleGrabPresets>();
+                if (xRSimpleGrab != null)
+                {
+                    grabType = xRSimpleGrab.grabbingType; 
+                    animateGrabFrame = xRSimpleGrab.animateFrame;
+                }
+                else
+                    grabType = GrabbingType.None; animateGrabFrame = 0f;
             }
         }
         private void ThumbButtonDown(XRController controller)
