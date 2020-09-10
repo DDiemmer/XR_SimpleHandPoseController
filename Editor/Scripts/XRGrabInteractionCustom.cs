@@ -67,26 +67,30 @@ namespace UserController
                         handDebug = handClone;
                     }
                 }
-                attachPointLH = Instantiate(new GameObject(), this.transform, false);
-                attachPointLH.name = "attachPointLeftH";
-                if (attachRelativeRotationLH != null)
-                {
-                    attachPointLH.transform.rotation = Quaternion.Euler(attachRelativeRotationLH);
-                }
-                attachPointLH.transform.position += (attachRelativePositionLH);
+                attachPointLH = CreateAttachPoint(attachRelativePositionLH, attachRelativeRotationLH, "attachPointLeftH", this.transform);
                 attachTransform = attachPointLH.transform;
             }
-            if (attachRelativePositionRH != null && attachRelativePositionRH != Vector3.zero)
-            {
-                attachPointRH = Instantiate(new GameObject(), this.transform, false);
-                attachPointRH.name = "attachPointRightH";
-                if (attachRelativeRotationRH != null)
-                {
-                    attachPointRH.transform.rotation = Quaternion.Euler(attachRelativeRotationRH);
-                }
-                attachPointRH.transform.position += (attachRelativePositionRH);
-            }
+
+            attachPointRH = CreateAttachPoint(attachRelativePositionRH, attachRelativeRotationRH, "attachPointRightH", this.transform);
         }
+
+        public GameObject CreateAttachPoint(Vector3 attachRelativePosition, Vector3 attachRelativeRotation, string objName, Transform parent)
+        {
+            GameObject attachPoint;
+            if (attachRelativePosition != null && attachRelativePosition != Vector3.zero)
+            {
+                attachPoint = Instantiate(new GameObject(), parent, false);
+                attachPoint.name = objName;
+                if (attachRelativeRotation != null)
+                {
+                    attachPoint.transform.rotation = Quaternion.Euler(attachRelativeRotation);
+                }
+                attachPoint.transform.position += (attachRelativePosition);
+                return attachPoint;
+            }
+            return null;
+        }
+
         public void SetDebugHand(bool _leftHand)
         {
             if (_leftHand == handDebug.transform.localScale.z > 0)
