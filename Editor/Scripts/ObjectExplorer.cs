@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-
+#if UNITY_EDITOR
 public class ObjectExplorer : EditorWindow
 {
     [MenuItem("Tools/Object Explorer")]
@@ -90,3 +90,4 @@ public class ObjectExplorer : EditorWindow
         GUILayout.EndScrollView();
     }
 }
+#endif
