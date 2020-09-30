@@ -14,5 +14,6 @@ public class HandSimulatorPrefabs : ScriptableObject
     {
         Instance = Resources.Load<HandSimulatorPrefabs>("HandSimulatorPrefabs");
     }
-    public GameObject HandSimulator;
+    public GameObject LeftHandSimulator;
+    public GameObject RightHandSimulator;
 }
