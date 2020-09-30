@@ -36,9 +36,9 @@ namespace UserController
             if (xRBaseController != null)
             {
                 xRBaseController.onHoverEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; OnSelectedEnter(XRBaseInteractor); });
-                xRBaseController.onHoverExit.AddListener((XRBaseInteractor) => { if (!isOnSelectedEvent) isOnInteractableEvent = false; });
+                xRBaseController.onHoverExit.AddListener((XRBaseInteractor) => { if (!isOnSelectedEvent) { isOnInteractableEvent = false; } });
                 xRBaseController.onSelectEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; isOnSelectedEvent = true; OnSelectedEnter(XRBaseInteractor); });
-                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; OnSelectedEnter(XRBaseInteractor); });
+                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; /*grabType = GrabbingType.None; animateGrabFrame = 0f;*/ });
             }
 
             XRController rController = GetComponentInParent<XRController>();
@@ -65,10 +65,31 @@ namespace UserController
                 grabType = (xRBaseInteractor as XRGrabInteractionCustom).grabbingType;
                 animateGrabFrame = (xRBaseInteractor as XRGrabInteractionCustom).animateFrame;
                 (xRBaseInteractor as XRGrabInteractionCustom).SetHandDiffs(isLeftHand);
-                if ((xRBaseInteractor as XRGrabInteractionCustom).Debug)
+                if ((xRBaseInteractor as XRGrabInteractionCustom).debug)
                 {
                     (xRBaseInteractor as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
                 }
+            }
+            else if (xRBaseInteractor.GetType() == typeof(XRGrabInteractableManyPosesCustom))
+            {
+                //todo: get the collision position
+                Vector3 handPos = this.transform.position;
+                XRGrabInteractableManyPosesCustom grabInt = (xRBaseInteractor as XRGrabInteractableManyPosesCustom);
+                grabInt.SetHandDiffs(isLeftHand, handPos);
+                grabType = grabInt.grabbingType;
+                animateGrabFrame = grabInt.animateFrame;
+            }
+            else
+            {
+                XRSimpleGrabPresets xRSimpleGrab = xRBaseInteractor.gameObject.GetComponent<XRSimpleGrabPresets>();
+                if (xRSimpleGrab != null)
+                {
+                    grabType = xRSimpleGrab.grabbingType;
+                    animateGrabFrame = xRSimpleGrab.animateFrame;
+                    
+                }
+                else
+                    grabType = GrabbingType.None; animateGrabFrame = 0f;
             }
         }
         private void ThumbButtonDown(XRController controller)

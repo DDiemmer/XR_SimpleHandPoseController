@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41f88d6d03446f44b91100138b7985e, type: 3}
   m_Name: HandSimulatorPrefabs
   m_EditorClassIdentifier: 
-  HandSimulator: {fileID: 2227362040200639040, guid: 6a064e51fca2f1442a2d3113e6efda41,
+  LeftHandSimulator: {fileID: 8318230298457105666, guid: 458ee64e36a6f1f4096244f5d7aaf0f7,
+    type: 3}
+  RightHandSimulator: {fileID: 8318230298457105666, guid: 9528c435af8b33b469a9d38882a31656,
+    type: 3}
+  DepHandSimulator: {fileID: 2227362040200639040, guid: 6a064e51fca2f1442a2d3113e6efda41,
     type: 3}
