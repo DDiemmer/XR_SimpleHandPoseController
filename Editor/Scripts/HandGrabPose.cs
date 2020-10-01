@@ -193,15 +193,15 @@ public class HandGrabPose : MonoBehaviour
         Vector3 dir = (useToCompare.position - handAttachPoint.position);
         handControlerSimulate.transform.position += dir;
 
-        float scaleDiff = 1 - handScale;
-        Vector3 centerDiff = (this.transform.localPosition * scaleDiff);
-        attachRelativePosition = ((useToCompare.position - this.transform.position) * handScale) - centerDiff;
-        attachRelativeRotation = this.transform.rotation.eulerAngles;
-        attachRelativeQRotation = this.transform.rotation;
-
         Vector3 scale = GetScaleMagnitude(this.transform, Vector3.one);
         scaleStart = scale.magnitude;
-        print(scale.magnitude);
+        //print(scale.magnitude);
+        
+        float scaleDiff = 1 - handScale;
+        Vector3 centerDiff = (this.transform.localPosition * scaleDiff * scale.x);
+        attachRelativePosition = ((useToCompare.position - this.transform.position) * handScale) - (centerDiff);
+        attachRelativeRotation = this.transform.rotation.eulerAngles;
+        attachRelativeQRotation = this.transform.rotation;
     }
 
     [Button]
