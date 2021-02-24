@@ -7,7 +7,9 @@ public class HandGrabPose : MonoBehaviour
     public GameObject prefabGrabHandController;
     [ReadOnly]
     public GameObject handControlerSimulate;
+    #if UNITY_EDITOR
     private HandControllerSimulate controllerSimulate;
+    #endif
     public GrabbingType grabbingType = GrabbingType.None;
     [Range(0.0025f, 1f)]
     public float animateFrame = 1f;
