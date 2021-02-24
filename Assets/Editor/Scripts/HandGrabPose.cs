@@ -60,7 +60,7 @@ public class HandGrabPose : MonoBehaviour
             }
             string attachName = "attachPoint";
             attachName += GetName();
-            attachPoint = CreateAttachPoint(attachRelativePosition, attachRelativeRotation, attachName, this.transform);
+            CreateAttachPoint(attachRelativePosition, attachRelativeRotation, attachName, this.transform);
         }
     }
 
@@ -69,19 +69,14 @@ public class HandGrabPose : MonoBehaviour
         return "hand";
     }
 
-    public GameObject CreateAttachPoint(Vector3 attachRelativePosition, Vector3 attachRelativeRotation, string objName, Transform parent)
+    public void CreateAttachPoint(Vector3 attachRelativePosition, Vector3 attachRelativeRotation, string objName, Transform parent)
     {
-        GameObject attachPoint;
         if (attachRelativePosition != null)
         {
-            attachPoint = Instantiate(new GameObject(), parent, false);
-            attachPoint.name = objName;
-
+            attachPoint = new GameObject(objName);
+            attachPoint.transform.SetParent(parent, false);
             SetLocation(attachPoint);
-
-            return attachPoint;
         }
-        return null;
     }
 
     private void SetLocation(GameObject attach)
@@ -111,7 +106,8 @@ public class HandGrabPose : MonoBehaviour
 
     public void SetDebugHand(bool active)
     {
-        if (!isReady && debug && handDebug != null) {
+        if (!isReady && debug && handDebug != null)
+        {
             handDebug.SetActive(active);
         }
     }
@@ -193,15 +189,16 @@ public class HandGrabPose : MonoBehaviour
         Vector3 dir = (useToCompare.position - handAttachPoint.position);
         handControlerSimulate.transform.position += dir;
 
-        float scaleDiff = 1 - handScale;
-        Vector3 centerDiff = (this.transform.localPosition * scaleDiff);
-        attachRelativePosition = ((useToCompare.position - this.transform.position) * handScale) - centerDiff;
-        attachRelativeRotation = this.transform.rotation.eulerAngles;
-        attachRelativeQRotation = this.transform.rotation;
-
         Vector3 scale = GetScaleMagnitude(this.transform, Vector3.one);
         scaleStart = scale.magnitude;
         print(scale.magnitude);
+
+        float scaleDiff = 1 - handScale;
+        Vector3 centerDiff = (this.transform.localPosition * scaleDiff * scale.x);
+        attachRelativePosition = ((useToCompare.position - this.transform.position) * handScale) - (centerDiff);
+        attachRelativeRotation = this.transform.rotation.eulerAngles;
+        attachRelativeQRotation = this.transform.rotation;
+
     }
 
     [Button]
@@ -213,7 +210,6 @@ public class HandGrabPose : MonoBehaviour
         HandGrabPose copyHandPose = copy.GetComponent<HandGrabPose>();
         copyHandPose.RemoveHandRef();
         //
-
     }
     public void RemoveHandRef()
     {

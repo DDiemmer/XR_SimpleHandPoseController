@@ -83,8 +83,10 @@ namespace UserController
             GameObject attachPoint;
             if (attachRelativePosition != null && attachRelativePosition != Vector3.zero)
             {
-                attachPoint = Instantiate(new GameObject(), parent, false);
-                attachPoint.name = objName;
+                //attachPoint = Instantiate(new GameObject(), parent, false);
+                //attachPoint.name = objName;
+                attachPoint = new GameObject(objName);
+                attachPoint.transform.SetParent(parent, false);
                 if (attachRelativeRotation != null)
                 {
                     attachPoint.transform.rotation = Quaternion.Euler(attachRelativeRotation);

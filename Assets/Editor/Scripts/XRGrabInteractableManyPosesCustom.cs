@@ -51,7 +51,7 @@ namespace UserController
             else
             {
                 attachTransform = this.gameObject.transform;
-                grabbingType = GrabbingType.None;
+                grabbingType = grabbingType != GrabbingType.SimpleFingerTip ? GrabbingType.None : grabbingType;
                 animateFrame = 0f;
             }
         }
