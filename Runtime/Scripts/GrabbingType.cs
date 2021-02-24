@@ -4,6 +4,7 @@
     {
         None,
         FingerGrab,
-        HandGrab
+        HandGrab,
+        SimpleFingerTip
     }
 }

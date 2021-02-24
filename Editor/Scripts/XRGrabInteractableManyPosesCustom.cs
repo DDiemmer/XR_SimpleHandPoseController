@@ -19,7 +19,8 @@ namespace UserController
 
         private void Start()
         {
-            if (autoFindCollisor) {
+            if (autoFindCollisor)
+            {
                 handGrabPoses = new List<HandGrabPose>();
                 handGrabPoses = new List<HandGrabPose>(GetComponentsInChildren<HandGrabPose>());
             }
@@ -51,7 +52,7 @@ namespace UserController
             else
             {
                 attachTransform = this.gameObject.transform;
-                grabbingType = GrabbingType.None;
+                grabbingType = grabbingType != GrabbingType.SimpleFingerTip ? GrabbingType.None : grabbingType;
                 animateFrame = 0f;
             }
         }

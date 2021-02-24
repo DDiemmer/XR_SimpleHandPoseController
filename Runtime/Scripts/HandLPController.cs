@@ -19,6 +19,8 @@ namespace UserController
         [Required]
         public ButtonHandler TriggerTouch = null;
 
+        private XRDirectInterationAttachCustom interationAttachCustom;
+
         private bool isLeftHand = false;
 
         private XRBaseControllerInteractor xRBaseController;
@@ -36,9 +38,9 @@ namespace UserController
             if (xRBaseController != null)
             {
                 xRBaseController.onHoverEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; OnSelectedEnter(XRBaseInteractor); });
-                xRBaseController.onHoverExit.AddListener((XRBaseInteractor) => { if (!isOnSelectedEvent) { isOnInteractableEvent = false; } });
+                xRBaseController.onHoverExit.AddListener((XRBaseInteractor) => { if (!isOnSelectedEvent) { isOnInteractableEvent = false; OnHoverExit(); } });
                 xRBaseController.onSelectEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; isOnSelectedEvent = true; OnSelectedEnter(XRBaseInteractor); });
-                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; /*grabType = GrabbingType.None; animateGrabFrame = 0f;*/ });
+                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; OnHoverExit(); });
             }
 
             XRController rController = GetComponentInParent<XRController>();
@@ -56,8 +58,16 @@ namespace UserController
             TriggerTouch.OnButtonDown += TriggerTouchButtonDown;
             TriggerTouch.OnButtonUp += TriggerTouchButtonUp;
 
+            interationAttachCustom = GetComponentInParent<XRDirectInterationAttachCustom>();
         }
-
+        private void OnHoverExit()
+        {
+            if (interationAttachCustom != null)
+            {
+                //change attach to finger attach position 
+                interationAttachCustom.UpdateAttachTransform(interationAttachCustom.defaultAttach);
+            }
+        }
         private void OnSelectedEnter(XRBaseInteractable xRBaseInteractor)
         {
             if (xRBaseInteractor.GetType() == typeof(XRGrabInteractionCustom))
@@ -78,6 +88,11 @@ namespace UserController
                 grabInt.SetHandDiffs(isLeftHand, handPos);
                 grabType = grabInt.grabbingType;
                 animateGrabFrame = grabInt.animateFrame;
+                if (grabType == GrabbingType.SimpleFingerTip && interationAttachCustom != null)
+                {
+                    //change attach to finger attach position 
+                    interationAttachCustom.UpdateAttachTransform(interationAttachCustom.fingerTipTransform);
+                }
             }
             else
             {
@@ -86,7 +101,7 @@ namespace UserController
                 {
                     grabType = xRSimpleGrab.grabbingType;
                     animateGrabFrame = xRSimpleGrab.animateFrame;
-                    
+
                 }
                 else
                     grabType = GrabbingType.None; animateGrabFrame = 0f;
@@ -134,6 +149,7 @@ namespace UserController
             switch (grabType)
             {
                 case GrabbingType.None:
+                case GrabbingType.SimpleFingerTip:
                     anim.SetBool("TriggerTouch", false);
                     anim.SetFloat("TriggerHandGrab", 0f);
                     anim.SetFloat("TriggerFingerGrab", 0f);
