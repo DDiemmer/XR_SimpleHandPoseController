@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -34,15 +34,6 @@ namespace UserController
             if (anim == null)
                 anim = GetComponent<Animator>();
 
-            xRBaseController = GetComponentInParent<XRBaseControllerInteractor>();
-            if (xRBaseController != null)
-            {
-                xRBaseController.onHoverEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; OnSelectedEnter(XRBaseInteractor); });
-                xRBaseController.onHoverExit.AddListener((XRBaseInteractor) => { if (!isOnSelectedEvent) { isOnInteractableEvent = false; OnHoverExit(); } });
-                xRBaseController.onSelectEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; isOnSelectedEvent = true; OnSelectedEnter(XRBaseInteractor); });
-                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; OnHoverExit(); });
-            }
-
             XRController rController = GetComponentInParent<XRController>();
             if (rController != null)
                 isLeftHand = rController.controllerNode == UnityEngine.XR.XRNode.LeftHand;
@@ -59,7 +50,25 @@ namespace UserController
             TriggerTouch.OnButtonUp += TriggerTouchButtonUp;
 
             interationAttachCustom = GetComponentInParent<XRDirectInterationAttachCustom>();
+            InitBaseController();
         }
+
+        public void InitBaseController()
+        {
+
+            if (xRBaseController != null)
+                return;
+
+            xRBaseController = GetComponentInParent<XRBaseControllerInteractor>();
+            if (xRBaseController != null)
+            {
+                xRBaseController.onHoverEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; OnSelectedEnter(XRBaseInteractor); });
+                xRBaseController.onHoverExit.AddListener((XRBaseInteractor) => { if (!isOnSelectedEvent) { isOnInteractableEvent = false; OnHoverExit(); } });
+                xRBaseController.onSelectEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; isOnSelectedEvent = true; OnSelectedEnter(XRBaseInteractor); });
+                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; OnHoverExit(); });
+            }
+        }
+
         private void OnHoverExit()
         {
             if (interationAttachCustom != null)
