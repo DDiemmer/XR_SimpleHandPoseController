@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using InputManager;
@@ -19,7 +17,7 @@ namespace UserController
         [Required]
         public ButtonHandler TriggerTouch = null;
 
-        private XRDirectInterationAttachCustom interationAttachCustom;
+        private IInteractableCustom interactable;
 
         private bool isLeftHand = false;
 
@@ -33,6 +31,15 @@ namespace UserController
         {
             if (anim == null)
                 anim = GetComponent<Animator>();
+
+            xRBaseController = GetComponentInParent<XRBaseControllerInteractor>();
+            if (xRBaseController != null)
+            {
+                xRBaseController.onHoverEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; OnSelectedEnter(XRBaseInteractor); });
+                xRBaseController.onHoverExit.AddListener((XRBaseInteractor) => { if (!isOnSelectedEvent) { isOnInteractableEvent = false; OnHoverExit(); } });
+                xRBaseController.onSelectEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; isOnSelectedEvent = true; OnSelectedEnter(XRBaseInteractor); });
+                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; OnHoverExit(); });
+            }
 
             XRController rController = GetComponentInParent<XRController>();
             if (rController != null)
@@ -49,32 +56,14 @@ namespace UserController
             TriggerTouch.OnButtonDown += TriggerTouchButtonDown;
             TriggerTouch.OnButtonUp += TriggerTouchButtonUp;
 
-            interationAttachCustom = GetComponentInParent<XRDirectInterationAttachCustom>();
-            InitBaseController();
+            interactable = GetComponentInParent<IInteractableCustom>();
         }
-
-        public void InitBaseController()
-        {
-
-            if (xRBaseController != null)
-                return;
-
-            xRBaseController = GetComponentInParent<XRBaseControllerInteractor>();
-            if (xRBaseController != null)
-            {
-                xRBaseController.onHoverEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; OnSelectedEnter(XRBaseInteractor); });
-                xRBaseController.onHoverExit.AddListener((XRBaseInteractor) => { if (!isOnSelectedEvent) { isOnInteractableEvent = false; OnHoverExit(); } });
-                xRBaseController.onSelectEnter.AddListener((XRBaseInteractor) => { isOnInteractableEvent = true; isOnSelectedEvent = true; OnSelectedEnter(XRBaseInteractor); });
-                xRBaseController.onSelectExit.AddListener((XRBaseInteractor) => { isOnSelectedEvent = false; OnHoverExit(); });
-            }
-        }
-
         private void OnHoverExit()
         {
-            if (interationAttachCustom != null)
+            if (interactable != null)
             {
                 //change attach to finger attach position 
-                interationAttachCustom.UpdateAttachTransform(interationAttachCustom.defaultAttach);
+                interactable.UpdateAttachTransform(interactable.GetDefaultAttach());
             }
         }
         private void OnSelectedEnter(XRBaseInteractable xRBaseInteractor)
@@ -97,10 +86,10 @@ namespace UserController
                 grabInt.SetHandDiffs(isLeftHand, handPos);
                 grabType = grabInt.grabbingType;
                 animateGrabFrame = grabInt.animateFrame;
-                if (grabType == GrabbingType.SimpleFingerTip && interationAttachCustom != null)
+                if (grabType == GrabbingType.SimpleFingerTip && interactable != null)
                 {
                     //change attach to finger attach position 
-                    interationAttachCustom.UpdateAttachTransform(interationAttachCustom.fingerTipTransform);
+                    interactable.UpdateAttachTransform(interactable.GetFingertipAttach());
                 }
             }
             else
@@ -110,7 +99,6 @@ namespace UserController
                 {
                     grabType = xRSimpleGrab.grabbingType;
                     animateGrabFrame = xRSimpleGrab.animateFrame;
-
                 }
                 else
                     grabType = GrabbingType.None; animateGrabFrame = 0f;

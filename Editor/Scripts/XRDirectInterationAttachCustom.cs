@@ -1,12 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public class XRDirectInterationAttachCustom : XRDirectInteractor
+public class XRDirectInterationAttachCustom : XRDirectInteractor, IInteractableCustom
 {
     public Transform defaultAttach;
     public Transform fingerTipTransform;
+
+    public Transform GetDefaultAttach()
+    {
+        return defaultAttach;
+    }
+
+    public Transform GetFingertipAttach()
+    {
+        return fingerTipTransform;
+    }
 
     public void UpdateAttachTransform(Transform attachReference)
     {
