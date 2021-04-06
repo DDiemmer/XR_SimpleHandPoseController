@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using InputManager;
 using NaughtyAttributes;
@@ -19,7 +17,7 @@ namespace UserController
         [Required]
         public ButtonHandler TriggerTouch = null;
 
-        private XRDirectInterationAttachCustom interationAttachCustom;
+        private IInteractableCustom interactable;
 
         private bool isLeftHand = false;
 
@@ -58,14 +56,14 @@ namespace UserController
             TriggerTouch.OnButtonDown += TriggerTouchButtonDown;
             TriggerTouch.OnButtonUp += TriggerTouchButtonUp;
 
-            interationAttachCustom = GetComponentInParent<XRDirectInterationAttachCustom>();
+            interactable = GetComponentInParent<IInteractableCustom>();
         }
         private void OnHoverExit()
         {
-            if (interationAttachCustom != null)
+            if (interactable != null)
             {
                 //change attach to finger attach position 
-                interationAttachCustom.UpdateAttachTransform(interationAttachCustom.defaultAttach);
+                interactable.UpdateAttachTransform(interactable.GetDefaultAttach());
             }
         }
         private void OnSelectedEnter(XRBaseInteractable xRBaseInteractor)
@@ -88,10 +86,10 @@ namespace UserController
                 grabInt.SetHandDiffs(isLeftHand, handPos);
                 grabType = grabInt.grabbingType;
                 animateGrabFrame = grabInt.animateFrame;
-                if (grabType == GrabbingType.SimpleFingerTip && interationAttachCustom != null)
+                if (grabType == GrabbingType.SimpleFingerTip && interactable != null)
                 {
                     //change attach to finger attach position 
-                    interationAttachCustom.UpdateAttachTransform(interationAttachCustom.fingerTipTransform);
+                    interactable.UpdateAttachTransform(interactable.GetFingertipAttach());
                 }
             }
             else
@@ -101,7 +99,6 @@ namespace UserController
                 {
                     grabType = xRSimpleGrab.grabbingType;
                     animateGrabFrame = xRSimpleGrab.animateFrame;
-
                 }
                 else
                     grabType = GrabbingType.None; animateGrabFrame = 0f;
