@@ -21,6 +21,8 @@ Necessary softwares to use the XRUI_Elements Package.
 1. Create a new Unity Project or open an existent one (Unity 2019.4).
 2. On Menu Bar, access "Window->PackageManager" - [Package Manager](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@2.0/manual/index.html).
 
+[Video tutorial here!](https://youtu.be/PV9YO72_n8Y)
+
 # Demo Scene
 
 
