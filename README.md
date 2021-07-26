@@ -1,7 +1,6 @@
 # XR_SimpleHandPoseController 0.1 Alpha
 
 
-</p>
 # Table of contents
 - [Installation](#installation)
 - [Usage](#usage)
