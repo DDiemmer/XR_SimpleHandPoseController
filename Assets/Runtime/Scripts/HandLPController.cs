@@ -58,6 +58,16 @@ namespace UserController
 
             interactable = GetComponentInParent<IInteractableCustom>();
         }
+        private void OnDestroy()
+	    {   
+		    GripTouch.OnButtonDown -= GripButtonDown;
+		    GripTouch.OnButtonUp -= GripButtonUp;
+		    triggerHandler.OnValueChange -= OnTrigger;
+		    ThumbTouch.OnButtonDown -= ThumbButtonDown;
+		    ThumbTouch.OnButtonUp -= ThumbButtonUp;
+		    TriggerTouch.OnButtonDown -= TriggerTouchButtonDown;
+		    TriggerTouch.OnButtonUp -= TriggerTouchButtonUp;
+	    }
         private void OnHoverExit()
         {
             if (interactable != null)
