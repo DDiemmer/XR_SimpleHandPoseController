@@ -78,7 +78,7 @@ namespace UserController
         }
         private void OnSelectedEnter(XRBaseInteractable xRBaseInteractor)
         {
-            if (xRBaseInteractor.GetType() == typeof(XRGrabInteractionCustom))
+            if (xRBaseInteractor as XRGrabInteractionCustom)
             {
                 grabType = (xRBaseInteractor as XRGrabInteractionCustom).grabbingType;
                 animateGrabFrame = (xRBaseInteractor as XRGrabInteractionCustom).animateFrame;
@@ -88,7 +88,7 @@ namespace UserController
                     (xRBaseInteractor as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
                 }
             }
-            else if (xRBaseInteractor.GetType() == typeof(XRGrabInteractableManyPosesCustom))
+            else if (xRBaseInteractor as XRGrabInteractableManyPosesCustom)
             {
                 //todo: get the collision position
                 Vector3 handPos = this.transform.position;
