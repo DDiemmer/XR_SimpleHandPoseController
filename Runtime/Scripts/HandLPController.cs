@@ -76,23 +76,26 @@ namespace UserController
                 interactable.UpdateAttachTransform(interactable.GetDefaultAttach());
             }
         }
-        private void OnSelectedEnter(XRBaseInteractable xRBaseInteractor)
+        private void OnSelectedEnter(XRBaseInteractable xRBaseInteractable)
         {
-            if (xRBaseInteractor as XRGrabInteractionCustom)
+	    if(xRBaseInteractable.isSelected)
+		return;
+		
+            if (xRBaseInteractable as XRGrabInteractionCustom)
             {
-                grabType = (xRBaseInteractor as XRGrabInteractionCustom).grabbingType;
-                animateGrabFrame = (xRBaseInteractor as XRGrabInteractionCustom).animateFrame;
-                (xRBaseInteractor as XRGrabInteractionCustom).SetHandDiffs(isLeftHand);
-                if ((xRBaseInteractor as XRGrabInteractionCustom).debug)
+                grabType = (xRBaseInteractable as XRGrabInteractionCustom).grabbingType;
+                animateGrabFrame = (xRBaseInteractable as XRGrabInteractionCustom).animateFrame;
+                (xRBaseInteractable as XRGrabInteractionCustom).SetHandDiffs(isLeftHand);
+                if ((xRBaseInteractable as XRGrabInteractionCustom).debug)
                 {
-                    (xRBaseInteractor as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
+                    (xRBaseInteractable as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
                 }
             }
-            else if (xRBaseInteractor as XRGrabInteractableManyPosesCustom)
+            else if (xRBaseInteractable as XRGrabInteractableManyPosesCustom)
             {
                 //todo: get the collision position
                 Vector3 handPos = this.transform.position;
-                XRGrabInteractableManyPosesCustom grabInt = (xRBaseInteractor as XRGrabInteractableManyPosesCustom);
+                XRGrabInteractableManyPosesCustom grabInt = (xRBaseInteractable as XRGrabInteractableManyPosesCustom);
                 grabInt.SetHandDiffs(isLeftHand, handPos);
                 grabType = grabInt.grabbingType;
                 animateGrabFrame = grabInt.animateFrame;
@@ -104,7 +107,7 @@ namespace UserController
             }
             else
             {
-                XRSimpleGrabPresets xRSimpleGrab = xRBaseInteractor.gameObject.GetComponent<XRSimpleGrabPresets>();
+                XRSimpleGrabPresets xRSimpleGrab = xRBaseInteractable.gameObject.GetComponent<XRSimpleGrabPresets>();
                 if (xRSimpleGrab != null)
                 {
                     grabType = xRSimpleGrab.grabbingType;
