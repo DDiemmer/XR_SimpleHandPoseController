@@ -1,10 +1,6 @@
-using NaughtyAttributes;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using UnityEngine.XR.Interaction.Toolkit;
 
 namespace UserController
@@ -44,6 +40,8 @@ namespace UserController
 			{
 				SetHandDiffs(hand.isLeftHand, hand.transform.position);
 			}
+			if (lastHandPose)
+				lastHandPose.SetDebugHand(false);
 		}
 
 		protected override void OnSelectExiting(SelectExitEventArgs args)
@@ -59,8 +57,8 @@ namespace UserController
 			{
 				isOnInteraction = true;
 				lPControllers.Add(hand);
-				//SetHandDiffs(hand.isLeftHand, xRBaseInteractor.transform.position);
-				if (lPControllers.Count == 1)
+
+				if (lPControllers.Count == 1 || isSelected)
 					StartCoroutine(UpdateHandInteractions());
 			}
 		}
@@ -82,7 +80,7 @@ namespace UserController
 
 		private IEnumerator UpdateHandInteractions()
 		{
-			if (isSelected)
+			if (isSelected && lPControllers.Count <= 1)
 			{
 				foreach (HandGrabPose handGrabPose in handGrabPoses)
 				{
@@ -91,12 +89,14 @@ namespace UserController
 			}
 			else
 			{
-
-				foreach (var lPcontroller in lPControllers)
+				foreach (HandLPController lPcontroller in lPControllers)
 				{
-					foreach (HandGrabPose handGrabPose in handGrabPoses.FindAll(p => p.leftHand == lPcontroller.isLeftHand))
+					if (!lPcontroller.IsOnSelectedEvent)
 					{
-						GetAndActiveClosestHand(lPcontroller.isLeftHand, lPcontroller.transform.position);
+						foreach (HandGrabPose handGrabPose in handGrabPoses.FindAll(p => p.leftHand == lPcontroller.isLeftHand))
+						{
+							GetAndActiveClosestHand(lPcontroller.isLeftHand, lPcontroller.transform.position);
+						}
 					}
 				}
 				yield return new WaitForSeconds(0.3f);
@@ -109,8 +109,6 @@ namespace UserController
 
 		public void SetHandDiffs(bool _leftHand, Vector3 handPosition)
 		{
-			//if (this.isSelected)
-			//	return;
 			attachTransform = this.gameObject.transform;
 			HandGrabPose closestHandPose = GetAndActiveClosestHand(_leftHand, handPosition);
 			lastHandPose = closestHandPose;
@@ -131,7 +129,6 @@ namespace UserController
 		private HandGrabPose GetAndActiveClosestHand(bool _leftHand, Vector3 handPosition)
 		{
 			HandGrabPose closestHandPose = null;
-			attachTransform = this.gameObject.transform;
 			float lastDist = float.MaxValue;
 			//get closest distance from hand 
 			foreach (HandGrabPose item in handGrabPoses.FindAll(p => p.leftHand == _leftHand))

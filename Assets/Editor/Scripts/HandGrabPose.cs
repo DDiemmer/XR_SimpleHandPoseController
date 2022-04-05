@@ -33,13 +33,9 @@ public class HandGrabPose : MonoBehaviour
 	public Vector3 originalLocalPoint;
 
 	public bool isReady = false;
-	//Todo: Debug have issues on some rotation 
-	[Header("Caution !its  have some issues with some rotations")]
 	public bool debug = true;
 
 	private GameObject handDebug;
-
-	public Transform testeAttachPoint;
 
 	protected void InitializePoint()
 	{
@@ -47,17 +43,7 @@ public class HandGrabPose : MonoBehaviour
 		{
 			if (handControlerSimulate != null)
 			{
-				if (!isReady && debug)
-				{
-					handControlerSimulate.SetActive(true);
-					GameObject handClone = Instantiate(handControlerSimulate);
-					handClone.transform.SetParent(transform);
-					handClone.transform.localScale = handClone.transform.localScale.GetInverseScale(this.transform.lossyScale);
-					handControlerSimulate.SetActive(false);
-					handDebug = handClone;
-					SetDebugHand(false);
-				}
-				else if (isReady)
+				if (isReady)
 				{
 					Destroy(handControlerSimulate);
 				}
@@ -65,6 +51,11 @@ public class HandGrabPose : MonoBehaviour
 			string attachName = "attachPoint";
 			attachName += GetName();
 			CreateAttachPoint(attachRelativePosition, attachRelativeRotation, attachName, this.transform);
+
+			if (debug)
+			{
+				CreateHandDebugObject();
+			}
 		}
 	}
 
@@ -90,10 +81,10 @@ public class HandGrabPose : MonoBehaviour
 		attach.transform.position += GetRelativeAttachPosition();
 	}
 
-	public Vector3 GetRelativeAttachPosition() 
+	public Vector3 GetRelativeAttachPosition()
 	{
 		float diff = transform.lossyScale.magnitude / scaleStart;
-		return (attachRelativePosition) * diff; ; 
+		return (attachRelativePosition) * diff;
 	}
 
 	public Transform GetAttachPoint()
@@ -103,7 +94,7 @@ public class HandGrabPose : MonoBehaviour
 
 	public void SetDebugHand(bool active)
 	{
-		if (!isReady && debug && handDebug != null)
+		if (debug && handDebug != null)
 		{
 			handDebug.transform.localScale = Vector3.one.GetInverseScale(transform.lossyScale);
 			handDebug.SetActive(active);
@@ -129,7 +120,6 @@ public class HandGrabPose : MonoBehaviour
 			handControlerSimulate.SetActive(true);
 
 		GetPrefab();
-
 
 		if (prefabGrabHandController != null && handControlerSimulate == null)
 		{
@@ -203,12 +193,6 @@ public class HandGrabPose : MonoBehaviour
 		attachRelativeRotation = this.transform.rotation.eulerAngles;
 		attachRelativeQRotation = this.transform.rotation;
 
-		if (testeAttachPoint != null)
-		{
-			testeAttachPoint.transform.SetParent(this.transform, false);
-			SetLocation(testeAttachPoint.gameObject);
-		}
-
 	}
 
 	[Button]
@@ -244,9 +228,28 @@ public class HandGrabPose : MonoBehaviour
 			else
 				Destroy(handControlerSimulate);
 		}
+		handAttachPoint = null;
 	}
 	public void OnDestroy()
 	{
 		DestroyHandSimulalte();
+	}
+
+	private void CreateHandDebugObject()
+	{
+		if (prefabGrabHandController != null && attachPoint && handDebug == null)
+		{
+			print(this.gameObject.name);
+			handDebug = Instantiate(prefabGrabHandController, attachPoint.transform);
+			handDebug.transform.localScale = new Vector3(handDebug.transform.localScale.x, handDebug.transform.localScale.y, handDebug.transform.localScale.z * (leftHand ? 1 : -1));
+			handDebug.transform.localScale = Vector3.one.GetInverseScale(transform.lossyScale);
+			controllerSimulate = handDebug.GetComponentInChildren<HandControllerSimulate>();
+			if (controllerSimulate != null)
+			{
+				controllerSimulate.SetVariables(grabbingType, animateFrame);
+			}
+			
+			SetDebugHand(false);
+		}
 	}
 }
