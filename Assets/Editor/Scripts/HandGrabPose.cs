@@ -239,7 +239,6 @@ public class HandGrabPose : MonoBehaviour
 	{
 		if (prefabGrabHandController != null && attachPoint && handDebug == null)
 		{
-			print(this.gameObject.name);
 			handDebug = Instantiate(prefabGrabHandController, attachPoint.transform);
 			handDebug.transform.localScale = new Vector3(handDebug.transform.localScale.x, handDebug.transform.localScale.y, handDebug.transform.localScale.z * (leftHand ? 1 : -1));
 			handDebug.transform.localScale = Vector3.one.GetInverseScale(transform.lossyScale);

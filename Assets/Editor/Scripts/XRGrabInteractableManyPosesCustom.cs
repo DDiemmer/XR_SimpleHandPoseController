@@ -15,20 +15,19 @@ namespace UserController
 		public float animateFrame = 1f;
 
 		private bool isOnInteraction = false;
-		private List<HandLPController> lPControllers;
+		private List<HandLPController> lPControllers = new List<HandLPController>();
 		HandGrabPose lastHandPose;
 
 		private void Start()
 		{
-			if (autoFindCollisor)
+			if (autoFindCollisor && handGrabPoses.Count == 0)
 			{
 				handGrabPoses = new List<HandGrabPose>();
 				handGrabPoses = new List<HandGrabPose>(GetComponentsInChildren<HandGrabPose>());
 			}
-			lPControllers = new List<HandLPController>();
+			
 			onHoverEntered.AddListener(OnEnterHandInteraction);
 			onHoverExited.AddListener(OnExitHandInteraction);
-
 		}
 
 		protected override void OnSelectEntering(SelectEnterEventArgs args)
@@ -87,7 +86,7 @@ namespace UserController
 					handGrabPose.SetDebugHand(false);
 				}
 			}
-			else
+			else if(lPControllers != null)
 			{
 				foreach (HandLPController lPcontroller in lPControllers)
 				{

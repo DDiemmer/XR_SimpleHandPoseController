@@ -1,13 +1,15 @@
 ﻿
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Support
 {
 	public static class Helper
 	{
-
 		/// <summary>
 		/// Get the inverse of the vector scale.
 		/// </summary>
@@ -62,6 +64,52 @@ namespace Support
 			}
 			return bounds;
 		}
+		/// <summary>
+		/// Resets local values of the <see cref="Transform"/>.
+		/// </summary>
+		/// <param name="transform">The <see cref="Transform"/> that will be change.</param>
+		public static void ResetLocalTransform(this Transform transform)
+		{
+			transform.localPosition = Vector3.zero;
+			transform.localScale = Vector3.one;
+			transform.localRotation = Quaternion.identity;
+		}
+		/// <summary>
+		/// Activates or deactivates the collisions of the <paramref name="objectToGetCollider"/>.
+		/// </summary>
+		/// <param name="objectToGetCollider">The <see cref="GameObject"/> to get the <see cref="Rigidbody"/>.</param>
+		/// <param name="active">Pass true to activate or false to deactivate the collisions of the object.</param>
+		public static void SetDetectCollisions(GameObject objectToGetCollider, bool active, bool clearInteractableColliders = false)
+		{
+			if (clearInteractableColliders && !active)
+			{
+				CleanInteractableColliders(objectToGetCollider);
+			}
+			Rigidbody[] rgBodies = objectToGetCollider.transform.GetComponentsInChildren<Rigidbody>(true);
+			foreach (Rigidbody item in rgBodies)
+			{
+				item.detectCollisions = active;
+			}
+		}
+		/// <summary>
+		/// Reads all <see cref="XRBaseInteractable"/> on the children to clean the colliders.
+		/// </summary>
+		/// <param name="gameObjectToRemove">The <see cref="GameObject"/> that will be destroyed later.</param>
+		public static void CleanInteractableColliders(GameObject gameObjectToRemove)
+		{
+			//destroy base interactables
+			XRBaseInteractable[] basesInteractables = gameObjectToRemove.transform.GetComponentsInChildren<XRBaseInteractable>();
 
+			//destroy base interactables
+			if (basesInteractables != null && basesInteractables.Length > 0)
+			{
+				foreach (XRBaseInteractable item in basesInteractables)
+				{
+					item.colliders.Clear();
+					//To clean interactable colliders and avoid error on the XRBaseInteractable.
+					typeof(XRBaseInteractable).GetField("m_Colliders", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(item, new List<Collider>());
+				}
+			}
+		}
 	}
 }
