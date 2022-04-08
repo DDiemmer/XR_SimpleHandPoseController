@@ -27,7 +27,7 @@ namespace UserController
         {
             if (anim == null)
                 anim = GetComponent<Animator>();
-
+            
             if(gameObject.activeInHierarchy)
                 anim.Update(Time.deltaTime);
         }

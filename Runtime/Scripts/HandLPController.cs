@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using InputManager;
 using NaughtyAttributes;
@@ -19,13 +19,14 @@ namespace UserController
 
 		private IInteractableCustom interactable;
 
-		private bool isLeftHand = false;
+		public bool isLeftHand = false;
 
 		private XRBaseControllerInteractor xRBaseController;
 		private bool isOnInteractableEvent = false;
 		private bool isOnSelectedEvent = false;
 		private GrabbingType grabType = GrabbingType.HandGrab;
 		private float animateGrabFrame;
+		public bool IsOnSelectedEvent { get { return isOnSelectedEvent; } }
 		// Start is called before the first frame update
 		void Start()
 		{
@@ -35,10 +36,8 @@ namespace UserController
 			xRBaseController = GetComponentInParent<XRBaseControllerInteractor>();
 			if (xRBaseController != null)
 			{
-				xRBaseController.onHoverEntered.AddListener((xRBaseInteractable) => { isOnInteractableEvent = true; OnSelectedEnter(xRBaseInteractable); });
-				xRBaseController.onHoverExited.AddListener((xRBaseInteractable) => { if (!isOnSelectedEvent) { isOnInteractableEvent = false; OnHoverExit(xRBaseInteractable); } });
-				xRBaseController.onSelectEntered.AddListener((xRBaseInteractable) => { isOnInteractableEvent = true; isOnSelectedEvent = true; OnSelectedEnter(xRBaseInteractable); });
-				xRBaseController.onSelectExited.AddListener((xRBaseInteractable) => { isOnSelectedEvent = false; OnHoverExit(xRBaseInteractable); });
+				xRBaseController.onSelectEntered.AddListener((XRBaseInteractor) => { OnSelectedEnter(XRBaseInteractor); });
+				xRBaseController.onSelectExited.AddListener((XRBaseInteractor) => { OnSelectExit(); });
 			}
 
 			XRController rController = GetComponentInParent<XRController>();
@@ -68,38 +67,35 @@ namespace UserController
 			TriggerTouch.OnButtonDown -= TriggerTouchButtonDown;
 			TriggerTouch.OnButtonUp -= TriggerTouchButtonUp;
 		}
-		private void OnHoverExit(XRBaseInteractable xRBaseInteractable)
-		{
-			if (xRBaseInteractable.isSelected || xRBaseController.isSelectActive)
-				return;
 
+		private void OnSelectExit()
+		{
 			if (interactable != null)
 			{
 				//change attach to finger attach position 
 				interactable.UpdateAttachTransform(interactable.GetDefaultAttach());
+				grabType = GrabbingType.None;
+				animateGrabFrame = 0f;
 			}
+			isOnSelectedEvent = false;
 		}
-		private void OnSelectedEnter(XRBaseInteractable xRBaseInteractable)
+		private void OnSelectedEnter(XRBaseInteractable xRBaseInteractor)
 		{
-			if (xRBaseInteractable.isSelected || xRBaseController.isSelectActive)
-				return;
+			isOnSelectedEvent = true;
 
-			if (xRBaseInteractable as XRGrabInteractionCustom)
+			if (xRBaseInteractor.GetType() == typeof(XRGrabInteractionCustom))
 			{
-				grabType = (xRBaseInteractable as XRGrabInteractionCustom).grabbingType;
-				animateGrabFrame = (xRBaseInteractable as XRGrabInteractionCustom).animateFrame;
-				(xRBaseInteractable as XRGrabInteractionCustom).SetHandDiffs(isLeftHand);
-				if ((xRBaseInteractable as XRGrabInteractionCustom).debug)
+				grabType = (xRBaseInteractor as XRGrabInteractionCustom).grabbingType;
+				animateGrabFrame = (xRBaseInteractor as XRGrabInteractionCustom).animateFrame;
+				(xRBaseInteractor as XRGrabInteractionCustom).SetHandDiffs(isLeftHand);
+				if ((xRBaseInteractor as XRGrabInteractionCustom).debug)
 				{
-					(xRBaseInteractable as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
+					(xRBaseInteractor as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
 				}
 			}
-			else if (xRBaseInteractable as XRGrabInteractableManyPosesCustom)
+			else if (xRBaseInteractor as XRGrabInteractableManyPosesCustom)
 			{
-				//todo: get the collision position
-				Vector3 handPos = this.transform.position;
-				XRGrabInteractableManyPosesCustom grabInt = (xRBaseInteractable as XRGrabInteractableManyPosesCustom);
-				grabInt.SetHandDiffs(isLeftHand, handPos);
+				XRGrabInteractableManyPosesCustom grabInt = (xRBaseInteractor as XRGrabInteractableManyPosesCustom);
 				grabType = grabInt.grabbingType;
 				animateGrabFrame = grabInt.animateFrame;
 				if (grabType == GrabbingType.SimpleFingerTip && interactable != null)
@@ -110,7 +106,7 @@ namespace UserController
 			}
 			else
 			{
-				XRSimpleGrabPresets xRSimpleGrab = xRBaseInteractable.gameObject.GetComponent<XRSimpleGrabPresets>();
+				XRSimpleGrabPresets xRSimpleGrab = xRBaseInteractor.gameObject.GetComponent<XRSimpleGrabPresets>();
 				if (xRSimpleGrab != null)
 				{
 					grabType = xRSimpleGrab.grabbingType;
@@ -153,7 +149,7 @@ namespace UserController
 		}
 		private void OnTrigger(XRController controller, float value)
 		{
-			if (!isOnInteractableEvent && !isOnSelectedEvent && value > 0.002f)
+			if (!isOnSelectedEvent && value > 0.002f)
 				return;
 
 			float maximumValue = animateGrabFrame;
@@ -180,6 +176,5 @@ namespace UserController
 
 			}
 		}
-
 	}
 }
