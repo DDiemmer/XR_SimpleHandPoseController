@@ -24,7 +24,7 @@ namespace UserController
 			Initialze();
 		}
 
-		protected void Initialze()
+		protected virtual void Initialze()
 		{
 			if (autoFindCollisor && handGrabPoses.Count == 0)
 			{
