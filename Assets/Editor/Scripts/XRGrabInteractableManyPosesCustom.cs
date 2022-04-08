@@ -10,26 +10,30 @@ namespace UserController
 		public bool autoFindCollisor = false;
 		public List<HandGrabPose> handGrabPoses;
 		public GrabbingType grabbingType = GrabbingType.None;
-		public bool positionOfParent = true;
+		public bool positionOfParent = false;
 		[Range(0.0025f, 1f)]
 		public float animateFrame = 1f;
 
 		private bool isOnInteraction = false;
 		private List<HandLPController> lPControllers = new List<HandLPController>();
 		HandGrabPose lastHandPose;
+		public bool disableDebug = false;
 
 		private void Start()
 		{
+			Initialze();
+		}
+
+		protected void Initialze()
+		{
 			if (autoFindCollisor && handGrabPoses.Count == 0)
 			{
-				handGrabPoses = new List<HandGrabPose>();
 				handGrabPoses = new List<HandGrabPose>(GetComponentsInChildren<HandGrabPose>());
 			}
-			
+
 			onHoverEntered.AddListener(OnEnterHandInteraction);
 			onHoverExited.AddListener(OnExitHandInteraction);
 		}
-
 		protected override void OnSelectEntering(SelectEnterEventArgs args)
 		{
 			base.OnSelectEntering(args);
@@ -86,7 +90,7 @@ namespace UserController
 					handGrabPose.SetDebugHand(false);
 				}
 			}
-			else if(lPControllers != null)
+			else if (lPControllers != null)
 			{
 				foreach (HandLPController lPcontroller in lPControllers)
 				{
@@ -103,6 +107,7 @@ namespace UserController
 				if (isOnInteraction && lPControllers.Count > 0)
 					StartCoroutine(UpdateHandInteractions());
 			}
+
 			yield return null;
 		}
 
@@ -143,7 +148,7 @@ namespace UserController
 					lastDist = dist;
 				}
 			}
-			if (closestHandPose)
+			if (closestHandPose && !disableDebug)
 				closestHandPose.SetDebugHand(true);
 
 			return closestHandPose;

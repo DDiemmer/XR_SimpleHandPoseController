@@ -93,7 +93,7 @@ namespace UserController
 					(xRBaseInteractor as XRGrabInteractionCustom).SetDebugHand(isLeftHand);
 				}
 			}
-			else if (xRBaseInteractor.GetType() == typeof(XRGrabInteractableManyPosesCustom))
+			else if (xRBaseInteractor as XRGrabInteractableManyPosesCustom)
 			{
 				XRGrabInteractableManyPosesCustom grabInt = (xRBaseInteractor as XRGrabInteractableManyPosesCustom);
 				grabType = grabInt.grabbingType;

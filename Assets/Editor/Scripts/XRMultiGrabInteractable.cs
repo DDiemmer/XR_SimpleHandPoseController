@@ -14,13 +14,13 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// </summary>
 	public bool allowRotation = true;
 	/// <summary>
-	/// Is the attachment point in the same position as the contact point? 
+	/// Is the attachment point in the same position and rotation as the contact point? 
 	/// </summary>
 	public bool usingOffsetGrab = false;
 	/// <summary>
-	/// Is the attachment point in the same rotation as the hand on the contact ? 
+	/// Is the attachment point in the same rotation only as the contact point? 
 	/// </summary>
-	public bool usingOffSetRotation = false;
+	public bool usingOffsetRotation = false;
 	/// <summary>
 	/// Stores the local position of the attachment position of the first <see cref="XRBaseInteractor"/>. 
 	/// </summary>
@@ -37,6 +37,14 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// Stores the position of the attachment position of the second <see cref="XRBaseInteractor"/>. 
 	/// </summary>
 	private Vector3 secondInteractorPosition;
+	/// <summary>
+	/// Stores the local position of the attachment position of the second <see cref="XRBaseInteractor"/>. 
+	/// </summary>
+	private Vector3 secInteractorlocalPosition = Vector3.zero;
+	/// <summary>
+	/// Stores the local rotation of the attachment position of the second <see cref="XRBaseInteractor"/>. 
+	/// </summary>
+	private Quaternion secInteractorlocalRotation = Quaternion.identity;
 	/// <summary>
 	/// A <see cref="Transform"/> to set the second grab position as guide direction to use when scale object while keep relative attach position.
 	/// </summary>
@@ -104,7 +112,7 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 		secondGrabInteractable.selectEntered.AddListener(OnSecondHandGrab);
 		secondGrabInteractable.selectExited.AddListener(OnSecondHandRelease);
 		secondGrabInteractable.gameObject.transform.ResetLocalTransform();
-		//should be smaller than main
+		//should be smaller than main ?
 		secondGrabInteractable.transform.localScale = Vector3.one * 0.98f;
 		secondGrabInteractable.enabled = false;
 
@@ -112,6 +120,9 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 
 		Helper.SetDetectCollisions(secondGrabInteractable.gameObject, false, false);
 		secondGrabInteractable.colliders.ForEach(x => x.enabled = false);
+		disableDebug = usingOffsetGrab;
+
+		Initialze();
 	}
 	/// <summary>
 	/// Changes the second <see cref="XRBaseInteractable"/>.
@@ -119,7 +130,6 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// <param name="_secondGrabInteractable">The second <see cref = "XRBaseInteractable" /> to replace the current one.</param>
 	public void ChangeSecondInteractable(XRBaseInteractable _secondGrabInteractable)
 	{
-
 		secondGrabInteractable.selectEntered.RemoveAllListeners();
 		secondGrabInteractable.selectExited.RemoveAllListeners();
 
@@ -135,19 +145,38 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// <inheritdoc/>
 	/// </summary>
 	/// <param name="args"><inheritdoc/></param>
-	protected override void OnSelectEntered(SelectEnterEventArgs args)
+	protected override void OnSelectEntering(SelectEnterEventArgs args)
 	{
-		base.OnSelectEntered(args);
+		base.OnSelectEntering(args);
+
+		firstInteractor = args.interactor;
+		return;
+
+		StoreInteractor(args.interactor);
+
+		if (!allowRescale && !allowRotation)
+			return;
 
 		secondGrabInteractable.enabled = true;
 		Helper.SetDetectCollisions(secondGrabInteractable.gameObject, true, false);
 
 		secondGrabInteractable.colliders.ForEach(x => x.enabled = true);
+
 		initialAttachRotation = args.interactor.attachTransform.localRotation;
-		firstInteractor = args.interactor;
+	}
+
+	protected override void OnSelectEntered(SelectEnterEventArgs args)
+	{
+		base.OnSelectEntered(args);
+		disableDebug = true;
 		StoreInteractor(args.interactor);
-		if (usingOffsetGrab || usingOffSetRotation)
-			MatchAttachment();
+
+		secondGrabInteractable.enabled = true;
+		Helper.SetDetectCollisions(secondGrabInteractable.gameObject, true, false);
+
+		secondGrabInteractable.colliders.ForEach(x => x.enabled = true);
+
+		initialAttachRotation = args.interactor.attachTransform.localRotation;
 	}
 	/// <summary>
 	/// <inheritdoc/>
@@ -157,11 +186,13 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	{
 		base.OnSelectExiting(args);
 
-		if (allowRotation)
-			args.interactor.attachTransform.localRotation = initialAttachRotation;
+		disableDebug = (usingOffsetGrab);
 
 		ResetAttachmentPoint(args.interactor);
 		ClearInteractor();
+
+		if (!allowRescale && !allowRotation)
+			return;
 
 		secondInteractor = null;
 		isSecondhandGrab = false;
@@ -175,6 +206,7 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// <param name="args">The <see cref="SelectEnterEventArgs"/> passed by event.</param>
 	public void OnSecondHandGrab(SelectEnterEventArgs args)
 	{
+		disableDebug = true;
 		secondInteractor = args.interactor;
 		isSecondhandGrab = true;
 		StoreSecondInteractor(args);
@@ -185,6 +217,8 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// <param name="args">The <see cref="SelectEnterEventArgs"/> passed by event.</param>
 	public void OnSecondHandRelease(SelectExitEventArgs args)
 	{
+
+		ResetSecAttachmentPoint(args.interactor);
 		secondGrabInteractable.gameObject.transform.ResetLocalTransform();
 		//should be smaller than main
 		secondGrabInteractable.transform.localScale = Vector3.one * 0.98f;
@@ -210,7 +244,7 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	{
 		base.ProcessInteractable(updatePhase);
 
-		if (secondInteractor && selectingInteractor)
+		if (secondInteractor && isSelected && isSecondhandGrab)
 		{
 			if (allowRotation)
 			{
@@ -219,11 +253,18 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 			}
 			if (allowRescale)
 			{
+				//it is working better here 
+				if (startDistance == 0 && lastGrabSize == Vector3.zero)
+				{
+					lastGrabSize = transform.localScale;
+					startDistance = Vector3.Distance(secondInteractor.transform.position, selectingInteractor.transform.position);
+				}
+
 				float handDistance = 0;
 				if (!isDistanceSecondGrab)
 				{
 					handDistance = Vector3.Distance(secondInteractor.transform.position, selectingInteractor.transform.position);
-					ScaleByGrasping(Mathf.Abs(handDistance));
+					ScaleByGrasping(handDistance);
 				}
 				else
 				{
@@ -238,8 +279,8 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 						ScaleByGrasping(Mathf.Abs(handDistance));
 				}
 			}
+			MatchAttachment();
 		}
-		MatchAttachment();
 	}
 	/// <summary>
 	/// Calculates the size of the object by the distance between the hands.
@@ -248,7 +289,6 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	protected void ScaleByGrasping(float handDistance)
 	{
 		float percent = (handDistance / (startDistance));
-
 		Vector3 newScale = (lastGrabSize * percent);
 
 		if (newScale.magnitude <= maxMagnitudeScale)
@@ -270,50 +310,20 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 		interactorlocalPosition = interactor.attachTransform.localPosition;
 		interactorlocalRotation = interactor.attachTransform.localRotation;
 
-		bool hasAttach = attachTransform != null;
 
-		if (usingOffsetGrab || usingOffSetRotation)
+		if (usingOffsetGrab || usingOffsetRotation)
 		{
-			if (usingOffSetRotation)
-				graspAttachPositionGuide.rotation = hasAttach ? attachTransform.rotation : transform.rotation;
-			else
-			{
-				graspAttachPositionGuide.rotation = firstInteractor.attachTransform.rotation;
-
-				//todo: verify it later 
-				//new UnityTask(Helper.WaitUntilEndOfFrame(() =>
-				//{
-				graspAttachPositionGuide.rotation = firstInteractor.attachTransform.rotation;
-
-				//}, 5));
-			}
-
+			bool hasAttach = attachTransform != null;
 			if (usingOffsetGrab)
 			{
+				// offset position 
 				graspAttachPositionGuide.position = (transform.position - (transform.position - interactorPosition));
-
 				Vector3 position = hasAttach ? attachTransform.position : transform.position;
 				firstInteractor.attachTransform.position = position + (firstInteractor.transform.position - graspAttachPositionGuide.position);
 			}
-			else
-				graspAttachPositionGuide.position = firstInteractor.attachTransform.position;
-
-			//todo: verify it later 
-			//new UnityTask(Helper.WaitUntilEndOfFrame(() =>
-			//{
-			graspAttachPositionGuide.position = firstInteractor.attachTransform.position;
-			//}, 5));
-
-			firstInteractor.attachTransform.rotation = hasAttach ? attachTransform.rotation : transform.rotation;
-		}
-		else
-		{
-			//todo: verify it later 
-			//new UnityTask(Helper.WaitUntilEndOfFrame(() =>
-			//{
-			graspAttachPositionGuide.position = firstInteractor.attachTransform.position;
-				graspAttachPositionGuide.rotation = firstInteractor.attachTransform.rotation;
-			//}, 5));
+			//changes the rotation offset for both cases 
+			graspAttachPositionGuide.rotation = hasAttach ? attachTransform.rotation : transform.rotation;
+			firstInteractor.attachTransform.rotation = graspAttachPositionGuide.rotation;
 		}
 
 		//todo: verify it later 
@@ -330,17 +340,16 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	private void StoreSecondInteractor(SelectEnterEventArgs args)
 	{
 		secondInteractorPosition = args.interactor.attachTransform.position;
+		secInteractorlocalPosition = args.interactor.attachTransform.localPosition;
+		secInteractorlocalRotation = args.interactor.attachTransform.localRotation;
 
 		graspSecAttachPositionGuide.position = (args.interactable.transform.position - (args.interactable.transform.position - secondInteractorPosition));
-		graspSecAttachPositionGuide.rotation = args.interactable.transform.rotation;
+		secondInteractor.attachTransform.position = args.interactable.transform.position + (secondInteractor.transform.position - graspSecAttachPositionGuide.position);
 
-		args.interactor.attachTransform.rotation = args.interactable.transform.rotation;
-		args.interactor.attachTransform.position = args.interactable.transform.position;
+		startDistance = 0;
 
-		startDistance = Vector3.Distance(graspAttachPositionGuide.position, graspSecAttachPositionGuide.position);
+		lastGrabSize = Vector3.zero;
 		isDistanceSecondGrab = false;
-		
-		lastGrabSize = transform.localScale;
 
 		////todo: verify it later 
 		//XRRayWithTriggerInteractor xrRay = (args.interactor as XRRayWithTriggerInteractor);
@@ -358,10 +367,11 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// </summary>
 	private void MatchAttachment()
 	{
-		if ((usingOffsetGrab || usingOffSetRotation) && attachTransform != null)
+		if (usingOffsetGrab && attachTransform != null && firstInteractor != null)
 		{
 			bool hasAttach = attachTransform != null;
-			firstInteractor.attachTransform.position = attachTransform.position + (firstInteractor.transform.position - graspAttachPositionGuide.position);
+			Vector3 position = hasAttach ? attachTransform.position : transform.position;
+			firstInteractor.attachTransform.position = position + (firstInteractor.transform.position - graspAttachPositionGuide.position);
 		}
 	}
 	/// <summary>
@@ -370,8 +380,19 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// <param name="interactor">The <see cref="XRBaseInteractor"/> that contains the attachTransform to store.</param>
 	private void ResetAttachmentPoint(XRBaseInteractor interactor)
 	{
+		interactor.attachTransform.position = interactorPosition;
 		interactor.attachTransform.localPosition = interactorlocalPosition;
 		interactor.attachTransform.localRotation = interactorlocalRotation;
+	}
+	/// <summary>
+	/// Resets the main interaction variables. 
+	/// </summary>
+	/// <param name="interactor">The <see cref="XRBaseInteractor"/> that contains the attachTransform to store.</param>
+	private void ResetSecAttachmentPoint(XRBaseInteractor interactor)
+	{
+		interactor.attachTransform.position = secondInteractorPosition;
+		interactor.attachTransform.localPosition = secInteractorlocalPosition;
+		interactor.attachTransform.localRotation = secInteractorlocalRotation;
 	}
 	/// <summary>
 	/// Clears the stored interactions.

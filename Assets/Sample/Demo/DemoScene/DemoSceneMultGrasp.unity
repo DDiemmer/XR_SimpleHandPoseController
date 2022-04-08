@@ -634,12 +634,13 @@ MonoBehaviour:
   - {fileID: 517764439}
   - {fileID: 1971394547}
   grabbingType: 0
-  positionOfParent: 1
+  positionOfParent: 0
   animateFrame: 1
+  disableDebug: 0
   secondGrabInteractable: {fileID: 1572869163}
   allowRotation: 1
-  usingOffsetGrab: 0
-  usingOffSetRotation: 0
+  usingOffsetGrab: 1
+  usingOffsetRotation: 1
   graspSecAttachPositionGuide: {fileID: 807004765}
   graspAttachPositionGuide: {fileID: 657841301}
   allowRescale: 1
@@ -1048,7 +1049,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &234990910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1170,6 +1171,7 @@ MonoBehaviour:
   grabbingType: 0
   positionOfParent: 0
   animateFrame: 1
+  disableDebug: 0
 --- !u!54 &234990911
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3602,20 +3604,20 @@ MonoBehaviour:
       m_Calls: []
   m_AttachTransform: {fileID: 0}
   m_AttachEaseInTime: 0.15
-  m_MovementType: 2
+  m_MovementType: 1
   m_VelocityDamping: 1
   m_VelocityScale: 1
   m_AngularVelocityDamping: 1
   m_AngularVelocityScale: 1
-  m_TrackPosition: 0
+  m_TrackPosition: 1
   m_SmoothPosition: 0
   m_SmoothPositionAmount: 5
   m_TightenPosition: 0.5
-  m_TrackRotation: 0
+  m_TrackRotation: 1
   m_SmoothRotation: 0
   m_SmoothRotationAmount: 5
   m_TightenRotation: 0.5
-  m_ThrowOnDetach: 1
+  m_ThrowOnDetach: 0
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -3642,8 +3644,9 @@ MonoBehaviour:
   - {fileID: 1971394547}
   - {fileID: 517764439}
   grabbingType: 0
-  positionOfParent: 1
+  positionOfParent: 0
   animateFrame: 1
+  disableDebug: 1
 --- !u!65 &1572869164
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3655,7 +3658,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.3, y: 1.3, z: 1.3}
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1572869165
 Rigidbody:
