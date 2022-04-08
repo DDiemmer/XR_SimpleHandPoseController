@@ -258,7 +258,6 @@ GameObject:
   - component: {fileID: 2124108804743411788}
   - component: {fileID: 1941298594039284935}
   - component: {fileID: 895053493245256835}
-  - component: {fileID: 1707089889862036926}
   m_Layer: 0
   m_Name: RightHandLP
   m_TagString: Untagged
@@ -319,24 +318,6 @@ MonoBehaviour:
   grabType: 0
   animationFrame: 0
   graspParent: {fileID: 3698040147031617048}
---- !u!114 &1707089889862036926
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1599210081712530166}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!1 &1655980318857928720
 GameObject:
   m_ObjectHideFlags: 0
@@ -721,7 +702,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3319082864090657407}
-  m_LocalRotation: {x: -0.0061260564, y: 0.0032923094, z: 0.034266733, w: 0.9993885}
+  m_LocalRotation: {x: -0.006126057, y: 0.0032923094, z: 0.034266736, w: 0.9993885}
   m_LocalPosition: {x: -0.009719926, y: 0.10773671, z: -0.00038577305}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
