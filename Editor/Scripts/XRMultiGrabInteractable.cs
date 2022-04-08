@@ -53,7 +53,7 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// <summary>
 	/// Stores the <see cref="XRBaseInteractor"/> of the second interactor.
 	/// </summary>
-	private XRBaseInteractor secondInteractor;
+	protected XRBaseInteractor secondInteractor;
 	/// <summary>
 	/// Stores the <see cref="XRBaseInteractor"/> of the first interactor.
 	/// </summary>
@@ -74,12 +74,12 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// <summary>
 	/// Is the second grab interactor a distance grab? 
 	/// </summary>
-	private bool isDistanceSecondGrab = false;
+	protected bool isDistanceSecondGrab = false;
+	public bool usingDistanceGrabOffSetToCalcDistance = false;
 	/// <summary>
 	/// Stores the direction of the ray when the second grab is grabbed by distance.
 	/// </summary>
-	private Transform secondRayFixedAttachmentPoint;
-
+	protected Transform secondRayFixedAttachmentPoint;
 	//scale variables
 	#region Scale Variables
 	/// <summary>
@@ -109,6 +109,13 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// </summary>
 	private void Start()
 	{
+		Initialze();
+	}
+
+	protected override void Initialze()
+	{
+		base.Initialze();
+
 		secondGrabInteractable.selectEntered.AddListener(OnSecondHandGrab);
 		secondGrabInteractable.selectExited.AddListener(OnSecondHandRelease);
 		secondGrabInteractable.gameObject.transform.ResetLocalTransform();
@@ -122,8 +129,8 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 		secondGrabInteractable.colliders.ForEach(x => x.enabled = false);
 		disableDebug = usingOffsetGrab;
 
-		Initialze();
 	}
+
 	/// <summary>
 	/// Changes the second <see cref="XRBaseInteractable"/>.
 	/// </summary>
@@ -257,7 +264,10 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 				if (startDistance == 0 && lastGrabSize == Vector3.zero)
 				{
 					lastGrabSize = transform.localScale;
-					startDistance = Vector3.Distance(secondInteractor.transform.position, selectingInteractor.transform.position);
+					if (isDistanceSecondGrab && usingDistanceGrabOffSetToCalcDistance)
+						startDistance = Vector3.Distance(transform.position, graspSecAttachPositionGuide.position);
+					else
+						startDistance = Vector3.Distance(secondInteractor.transform.position, selectingInteractor.transform.position);
 				}
 
 				float handDistance = 0;
@@ -304,7 +314,7 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 	/// Stores the main interaction variables.
 	/// </summary>
 	/// <param name="interactor">The <see cref="XRBaseInteractor"/> that contains the attachTransform to store.</param>
-	private void StoreInteractor(XRBaseInteractor interactor)
+	protected virtual void StoreInteractor(XRBaseInteractor interactor)
 	{
 		interactorPosition = interactor.attachTransform.position;
 		interactorlocalPosition = interactor.attachTransform.localPosition;
@@ -325,19 +335,12 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 			graspAttachPositionGuide.rotation = hasAttach ? attachTransform.rotation : transform.rotation;
 			firstInteractor.attachTransform.rotation = graspAttachPositionGuide.rotation;
 		}
-
-		//todo: verify it later 
-		//XRRayWithTriggerInteractor xrRay = (interactor as XRRayWithTriggerInteractor);
-		//if (xrRay && xrRay.rayDistanceActive && xrRay.rayTipAttachTransform.parent == transform)
-		//{
-		//	graspAttachPositionGuide.position = transform.position;
-		//}
 	}
 	/// <summary>
 	/// Stores the main interaction variables of the second grab interactor.
 	/// </summary>
 	/// <param name="interactor">The <see cref="XRBaseInteractor"/> that contains the attachTransform to store.</param>
-	private void StoreSecondInteractor(SelectEnterEventArgs args)
+	protected virtual void StoreSecondInteractor(SelectEnterEventArgs args)
 	{
 		secondInteractorPosition = args.interactor.attachTransform.position;
 		secInteractorlocalPosition = args.interactor.attachTransform.localPosition;
@@ -351,21 +354,12 @@ public class XRMultiGrabInteractable : XRGrabInteractableManyPosesCustom
 		lastGrabSize = Vector3.zero;
 		isDistanceSecondGrab = false;
 
-		////todo: verify it later 
-		//XRRayWithTriggerInteractor xrRay = (args.interactor as XRRayWithTriggerInteractor);
-		//if (xrRay && xrRay.rayDistanceActive && xrRay.rayTipAttachTransform.parent == args.interactable.transform)
-		//{
-		//	graspSecAttachPositionGuide.position = xrRay.rayTipAttachTransform.position;
-		//	secondRayFixedAttachmentPoint = xrRay.fingerTipTransform;
-		//	isDistanceSecondGrab = true;
-		//	startDistance = Vector3.Distance(transform.position, graspSecAttachPositionGuide.position);
-		//}
 	}
 
 	/// <summary>
 	/// Sets attachTransform position on the contact position.
 	/// </summary>
-	private void MatchAttachment()
+	protected void MatchAttachment()
 	{
 		if (usingOffsetGrab && attachTransform != null && firstInteractor != null)
 		{
