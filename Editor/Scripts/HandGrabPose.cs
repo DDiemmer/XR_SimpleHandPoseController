@@ -8,7 +8,9 @@ public class HandGrabPose : MonoBehaviour
 	public GameObject prefabGrabHandController;
 	[ReadOnly]
 	public GameObject handControlerSimulate;
+#if UNITY_EDITOR
 	private HandControllerSimulate controllerSimulate;
+#endif
 	public GrabbingType grabbingType = GrabbingType.None;
 	[Range(0.0025f, 1f)]
 	public float animateFrame = 1f;
@@ -52,10 +54,12 @@ public class HandGrabPose : MonoBehaviour
 			attachName += GetName();
 			CreateAttachPoint(attachRelativePosition, attachRelativeRotation, attachName, this.transform);
 
+#if UNITY_EDITOR
 			if (debug)
 			{
 				CreateHandDebugObject();
 			}
+#endif
 		}
 	}
 
@@ -216,7 +220,23 @@ public class HandGrabPose : MonoBehaviour
 		attachPoint = null;
 		originalLocalPoint = Vector3.zero;
 	}
-
+	
+	private void CreateHandDebugObject()
+	{
+		if (prefabGrabHandController != null && attachPoint && handDebug == null)
+		{
+			handDebug = Instantiate(prefabGrabHandController, attachPoint.transform);
+			handDebug.transform.localScale = new Vector3(handDebug.transform.localScale.x, handDebug.transform.localScale.y, handDebug.transform.localScale.z * (leftHand ? 1 : -1));
+			handDebug.transform.localScale = Vector3.one.GetInverseScale(transform.lossyScale);
+			controllerSimulate = handDebug.GetComponentInChildren<HandControllerSimulate>();
+			if (controllerSimulate != null)
+			{
+				controllerSimulate.SetVariables(grabbingType, animateFrame);
+			}
+			
+			SetDebugHand(false);
+		}
+	}
 #endif
 	[Button]
 	public void DestroyHandSimulalte()
@@ -235,20 +255,4 @@ public class HandGrabPose : MonoBehaviour
 		DestroyHandSimulalte();
 	}
 
-	private void CreateHandDebugObject()
-	{
-		if (prefabGrabHandController != null && attachPoint && handDebug == null)
-		{
-			handDebug = Instantiate(prefabGrabHandController, attachPoint.transform);
-			handDebug.transform.localScale = new Vector3(handDebug.transform.localScale.x, handDebug.transform.localScale.y, handDebug.transform.localScale.z * (leftHand ? 1 : -1));
-			handDebug.transform.localScale = Vector3.one.GetInverseScale(transform.lossyScale);
-			controllerSimulate = handDebug.GetComponentInChildren<HandControllerSimulate>();
-			if (controllerSimulate != null)
-			{
-				controllerSimulate.SetVariables(grabbingType, animateFrame);
-			}
-			
-			SetDebugHand(false);
-		}
-	}
 }
